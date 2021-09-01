@@ -1,11 +1,10 @@
-!============================================================================== Zmienne + Formaty      
+!==============================================================================
 	  module parameters
              implicit none
-             integer, parameter:: Np = 6   ! length of a partition
-             double precision, parameter:: alpha = -2d0!-2./5. ! schury = 1
-             integer, parameter:: ile_part=72000 ! number of dominated partitions
-             integer, parameter:: ilecza = 3! how many particles (variables)
-             integer, parameter:: ile_orb =6 ! how many orbitals on the sphere ! = Np?
+             integer, parameter:: Np = 9   ! length of a partition
+             integer, parameter:: max_domin_parti=72000 ! number of dominated partitions
+             integer, parameter:: nb_particles = 4! how many particles (variables)
+             integer, parameter:: nb_orbit =9 ! how many orbitals on the sphere ! = Np?
       end module parameters
 !=========================
       module formats
@@ -15,12 +14,12 @@
       		character(LEN=20), parameter :: wspp = '(F15.10)'
       end module formats
 
-!============================================================================== END Zmienne + Formaty   
+!============================================================================== END Zmienne + Formaty
 
 
 !============================================================================== FUNKCJE
       module funkcje
-      contains	
+      contains
 !============================================ rho
 
       double precision Function rho(lambda)
@@ -30,31 +29,35 @@
       integer lambda(0:Np)
       integer i,j
 
-      integer ilezm_l, sum_kw, sum_i, index
+      integer how_many_variabl_l, sum_sq, sum_i, index
+	  double precision alpha
+
+      common /alp/ alpha
+
 
       sum_i = 0
-      sum_kw = 0
-      ilezm_l =0
-      index = 1  ! Potrzebne - "i" z sumy w LLL
+      sum_sq = 0
+      how_many_variabl_l =0
+      index = 1  ! For sums in LLL
 
-!============================== Sprawdzanie ile czastek
+!============================== Particle number counting
       do i=0,Np
-         ilezm_l = ilezm_l + lambda(i)
+         how_many_variabl_l = how_many_variabl_l + lambda(i)
       enddo
-      
-      if (ilezm_l .ne. ilecza) then
+
+      if (how_many_variabl_l .ne. nb_particles) then
           write(*,*) 'Problem with rho - number of particles different than variables'
-          write(*,*) 'particles:', ilecza
-          write(*,*) 'variables:', ilezm_l
-          
+          write(*,*) 'particles:', nb_particles
+          write(*,*) 'variables:', how_many_variabl_l
+
           write(*,party) lambda
           read(*,*)
           call EXIT
       endif
-!============================== END: Sprawdzanie ile czastek
-      
+!============================== END: Particle number counting
+
       do i=0,Np
-         sum_kw = sum_kw + i*i*lambda(i)
+         sum_sq = sum_sq + i*i*lambda(i)
       enddo
 
       do i=0,Np
@@ -63,11 +66,11 @@
                  sum_i = sum_i + index*(Np-i)
                  index = index + 1
                  j = j+1
-         enddo 
+         enddo
       enddo
 
 
-      rho = dble(sum_kw) + dble(sum_i)*2d0*(1d0 - 1d0 / alpha) ! PLUS - MINUS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      rho = dble(sum_sq) + dble(sum_i)*2d0*(1d0 - 1d0 / alpha) ! PLUS - MINUS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
       return
       end function
@@ -162,11 +165,11 @@
       if (up(1)-down(1) .eq. down(2)-up(2)) then
 
           C_lm = (down(2)-down(1))
-          
+
           do i = up(1)+1, down(1)-1
              swap = swap + mu(i)
           enddo
-          
+
           do i = down(2)+1, up(2)-1
              swap = swap + mu(i)
           enddo
@@ -174,11 +177,11 @@
           if (mod(swap,2) .eq. 1) then
              C_lm = (-1)*C_lm
           endif
-         
+
       else
           C_lm = 0
       endif
-      
+
 111   return
       end Function
 
@@ -186,17 +189,12 @@
 !============================================ END  C_{\lambda, \mu} Coefficients
 
 
-
-
-
-
-
 !============================================ Is partition dominated in natural order by another partition?
 
 
-      Logical Function czyzdom(lambda, mu)
+      Logical Function is_dominated(lambda, mu)
       use parameters
-      implicit none 
+      implicit none
 
 
       integer lambda(0:Np)
@@ -204,24 +202,24 @@
       integer i,j
       integer sumL, sumM
       integer partL, partM
-      integer ileL, ileM
-      integer ilezmL, ilezmM
+      integer howmanyL, howmanyM
+      integer how_many_variablL, how_many_variablM
 
-      ilezmL = 0
-      ilezmM = 0
-      
+      how_many_variablL = 0
+      how_many_variablM = 0
+
       sumL = 0
       sumM = 0
 
       do i=0,Np
-         ilezmL = ilezmL + lambda(i)
+         how_many_variablL = how_many_variablL + lambda(i)
       enddo
-      
+
       do i=0,Np
-         ilezmM = ilezmM + mu(i)
+         how_many_variablM = how_many_variablM + mu(i)
       enddo
-!	   Wont work for notsqueezingable partition cause mu(0)=-1		
-      if (mu(0) .ne. -1 .and. ilezmL .ne. ilezmM) then
+!	   Wont work for notsqueezingable partition cause mu(0)=-1
+      if (mu(0) .ne. -1 .and. how_many_variablL .ne. how_many_variablM) then
          write(*,*) 'partitions have different length'
          write(*,*) lambda
          write(*,*)
@@ -229,126 +227,126 @@
          read(*,*)
       endif
 
-      
+
 
       do i = 0, Np
          if (lambda(Np-i) .ne. 0) then
             partL = Np-i
-            ileL = lambda(Np-i)
+            howmanyL = lambda(Np-i)
             EXIT
          endif
       enddo
 
-      
+
       do i = 0, Np
          if (mu(Np-i) .ne. 0) then
             partM = Np-i
-            ileM = mu(Np-i)
+            howmanyM = mu(Np-i)
             EXIT
          endif
-      enddo          
-         
-      do j = 1, ilezmL
-        
-             
-                
-             if (ileL .eq. 0) then
+      enddo
+
+      do j = 1, how_many_variablL
+
+
+
+             if (howmanyL .eq. 0) then
                 do i = (Np - partL +1) ,Np
                    if (lambda(Np-i).ne. 0) then
                       partL = Np-i
-                      ileL = lambda(Np-i)
+                      howmanyL = lambda(Np-i)
                       EXIT
                    endif
                 enddo
-             endif         
+             endif
 
 
-             if (ileM .eq. 0) then
+             if (howmanyM .eq. 0) then
                 do i = (Np - partM +1) ,Np
                    if (mu(Np-i).ne. 0) then
                       partM = Np-i
-                      ileM = mu(Np-i)
+                      howmanyM = mu(Np-i)
                       EXIT
                    endif
                 enddo
-             endif  
-             
+             endif
+
              sumL = sumL + partL
              sumM = sumM + partM
 
-                
+
              if (sumL < sumM) then
-                czyzdom = .false.
+                is_dominated = .false.
 
 
                 goto 222
              endif
 
 
-                
-             ileL = ileL -1
-             ileM = ileM -1
+
+             howmanyL = howmanyL -1
+             howmanyM = howmanyM -1
 
 
-             
-      enddo 
-      
 
-      
+      enddo
 
-      czyzdom = .true.
-      
-222   return 
+
+
+
+      is_dominated = .true.
+
+222   return
       end function
 !============================================ END Is partition dominated in natural order by another partition?
 
 
 
-!============================================ Next partition in natural order  
+!============================================ Next partition in natural order
 
 
       Function dominated(lambda) result(mu)
       use parameters
       implicit none
-      
+
       integer lambda(0:Np)
       integer mu(0:Np)
       integer i,j
-      integer ilezm,ilewyp  ! ilo zmiennych do dyspozycji, ile musze wypeni liczb
-      integer flaga
-      flaga =-1
+      integer how_many_variabl,how_many_to_fill  ! How many variables are available , parts of partition (to fill)
+      integer flag_1
+      flag_1 =-1
 
       mu(0:Np) = lambda(0:Np)
 
-      ilezm = lambda(0) + lambda(1)
-      ilewyp = lambda(1)
+      how_many_variabl = lambda(0) + lambda(1)
+      how_many_to_fill = lambda(1)
 
 
       do i = 2,Np
          if(lambda(i) .ne. 0) then
 
-            if ( (i-1)*ilezm  .ge. (ilewyp+1)) then !<=> (ilezm+1)(i-1) .ge. ilewyp+i
-                flaga =1 ! partition is changing
+            if ( (i-1)*how_many_variabl  .ge. (how_many_to_fill+1)) then !<=> (how_many_variabl+1)(i-1) .ge. how_many_to_fill+i
+                flag_1 =1 ! partition is changing
                 mu(i)=mu(i)-1
-                mu(i-1) = (ilewyp+1)/(i-1) + 1 ! +1 cause one is from mu(i) ! <=> (ilewyp+i)/(i-1)
+                mu(i-1) = (how_many_to_fill+1)/(i-1) + 1 ! +1 cause one is from mu(i) ! <=> (how_many_to_fill+i)/(i-1)
 
-                if ((ilewyp + 1 - ((mu(i-1) -1 ) * (i-1))) .eq. 0) then ! how many variables one has to use ! <=> ilewyp + i - mu(i-1) *(i-1)  = 0
+                if ((how_many_to_fill + 1 - ((mu(i-1) -1 ) * (i-1))) .eq. 0) then ! how many variables one has to use ! <=> how_many_to_fill + i - mu(i-1) *(i-1)  = 0
                    do j = 0,(i-2)
                       mu(j)=0
                    enddo
-                    mu(0)= (ilezm+1) - mu(i-1)
+                    mu(0)= (how_many_variabl+1) - mu(i-1)
                    goto 333
                 else
                     do j = 0,(i-2)
                        mu(j)=0
                     enddo
-                    mu(ilewyp+1 - ((mu(i-1)-1) * (i-1)) ) = 1 ! zero everything exept for number that has left
-                    mu(0)= ilezm - mu(i-1) ! ile zmiennych niewykorzystanych idzie do zera
+                    mu(how_many_to_fill+1 - ((mu(i-1)-1) * (i-1)) ) = 1 ! zero everything exept for number that has left
+                    mu(0)= how_many_variabl - mu(i-1) ! ile zmiennych niewykorzystanych idzie do zera
                     goto 333
                 endif
             else
-                ilewyp = ilewyp+ lambda(i)*i
-                ilezm =  ilezm + lambda(i)
+                how_many_to_fill = how_many_to_fill+ lambda(i)*i
+                how_many_variabl =  how_many_variabl + lambda(i)
             endif
 
          endif
@@ -357,43 +355,43 @@
 
 
 
-      if (flaga .eq. -1) then
+      if (flag_1 .eq. -1) then
          mu(0) = -1
       endif
 
 
 333   return
       end function
-      
-!============================================ END Next partition in natural order  
-	
+
+!============================================ END Next partition in natural order
+
 
 !============================================ List of partitions dominated by fixed partition
 
 
-      Subroutine  list_zdom_B (lista_zdom_B, lambda)
+      Subroutine  list_zdom_B (list_domin_B, lambda)
       use parameters
       implicit none
-      
-      integer lista_zdom_B(0:Np,0:ile_part)
+
+      integer list_domin_B(0:Np,0:max_domin_parti)
       integer lambda(0:Np)
       integer Msize
       integer i
       integer temppart (0:Np)
-      integer temppart2 (0:Np)     
+      integer temppart2 (0:Np)
 
 
 
       Msize = -1
-      lista_zdom_B(0:Np,0:ile_part) = 0
-      lista_zdom_B(0:Np,1) = lambda   ! We are starting with lambda
+      list_domin_B(0:Np,0:max_domin_parti) = 0
+      list_domin_B(0:Np,1) = lambda   ! We are starting with lambda
 
-      do i = 2,ile_part
-      
- 	 temppart2 =  lista_zdom_B(0:Np, i-1)
+      do i = 2,max_domin_parti
+
+ 	 temppart2 =  list_domin_B(0:Np, i-1)
          temppart(0:Np) = dominated(temppart2) !lambda!dominated(lista(0:Np, i-1))
-         
-555      if ( .not. (czyzdom(lambda, temppart)) ) then
+
+555      if ( .not. (is_dominated(lambda, temppart)) ) then
              temppart(0:Np) = dominated(temppart)
              goto 555
          endif
@@ -403,7 +401,7 @@
             goto 444
          endif
 
-         lista_zdom_B(0:Np, i)  = temppart
+         list_domin_B(0:Np, i)  = temppart
       enddo
 
 
@@ -412,9 +410,9 @@
          read(*,*)
       endif
 
-444   lista_zdom_B(0,0) = Msize
-	  write(*,*) 'Size of partition matrix:  ', Msize	
-!	  read(*,*)
+444   list_domin_B(0,0) = Msize
+	  write(*,*) 'Size of partition matrix:  ', Msize
+
 
       return
       end Subroutine
@@ -426,27 +424,27 @@
 !============================================ List of partitions dominated by fixed partition
 
 
-      Subroutine  list_zdom_F (lista_zdom_B, lista_zdom_F, Msize)
+      Subroutine  list_zdom_F (list_domin_B, list_domin_F, Msize)
       use parameters
       implicit none
 
-      integer lista_zdom_F(0:Np,0:ile_part)
-      integer lista_zdom_B(0:Np,0:ile_part)
+      integer list_domin_F(0:Np,0:max_domin_parti)
+      integer list_domin_B(0:Np,0:max_domin_parti)
       integer temppart (0:Np)
       integer index
       integer i,j,k
       integer Msize
 
-      lista_zdom_F(0:Np,0:ile_part) = 0
+      list_domin_F(0:Np,0:max_domin_parti) = 0
 
       do i = 1, Msize
          index = 0
          do j = 0, Np
             k = 0
-            do while (lista_zdom_B(j,i) .ne. k)
+            do while (list_domin_B(j,i) .ne. k)
 
-                 lista_zdom_F(j+index,i) =  lista_zdom_F(j+index,i) + 1
-                 
+                 list_domin_F(j+index,i) =  list_domin_F(j+index,i) + 1
+
                  index = index + 1
                  k = k + 1
             enddo
@@ -464,7 +462,7 @@
 
 !============================================ Coefficients (on the plane)
 
-      Subroutine wsp(Msize, lista_zdom_F, c_i)
+      Subroutine wsp(Msize, list_domin_F, c_i)
       use parameters
       implicit none
 
@@ -474,25 +472,29 @@
       integer i,j
 
       double precision rho_lam
-      double precision c_i(0:ile_part)
-      integer lista_zdom_F(0:Np,0:ile_part)
+      double precision c_i(0:max_domin_parti)
+      integer list_domin_F(0:Np,0:max_domin_parti)
       integer temppart (0:Np)
       integer temppart2 (0:Np)
+      double precision alpha
 
-      c_i(0:ile_part) = 0d0
+      common /alp/ alpha
+
+
+      c_i(0:max_domin_parti) = 0d0
       c_i(1) = 1d0
-      
+
       prod = 1d0
-      temppart(0:Np) =   lista_zdom_F(0:Np,1)
+      temppart(0:Np) =   list_domin_F(0:Np,1)
       rho_lam = rho(temppart)
-      
+
 
       do i = 2, Msize
-      
-         temppart = lista_zdom_F(0:Np,i)
-         
+
+         temppart = list_domin_F(0:Np,i)
+
          do j = 1, i-1
-            temppart2 =   lista_zdom_F(0:Np,j)
+            temppart2 =   list_domin_F(0:Np,j)
             c_i(i)  = c_i(i)+ c_i(j) * C_lm(temppart2, temppart)
          enddo
 
@@ -500,7 +502,7 @@
             write(*,*) 'eigenvalues equal'
             read(*,*)
          endif
-         
+
          c_i(i)=  c_i(i)*2d0*(1d0/alpha-1d0) /(rho_lam - rho(temppart))
       enddo
 
@@ -508,7 +510,7 @@
 
       write(*,*) 'Max and min in c_i: ', maxval(real(c_i)), minval(real(c_i))
       write(*,*)
-!      read (*,*)
+
 
 
       return
@@ -522,7 +524,7 @@
       use parameters
       implicit none
 
-      double precision MH(0:Np)
+      double precision MH(0:Np) ! Monopole harmonica coeffiecients (inverse stereographic projection)
       integer orbitals ! Np?
 
       integer i
@@ -538,7 +540,6 @@
 
       write(*,*) 'Max and min in MH_S: ', maxval(real(MH)), minval(real(MH))
       write(*,*)
-!      read (*,*)
 
       return
       end Subroutine
@@ -547,14 +548,14 @@
 
 !============================================ Jack: from plane to sphere
 
-      Subroutine  wsp_S (MH, c_i, b_i, lista_zdom_F,Msize )
+      Subroutine  coeff_Sp (MH, c_i, b_i, list_domin_F,Msize )
       use parameters
       implicit none
 
       double precision MH(0:Np)
-      double precision c_i(0:ile_part)
-      double precision b_i(0:ile_part)
-      integer lista_zdom_F(0:Np,0:ile_part)
+      double precision c_i(0:max_domin_parti)
+      double precision b_i(0:max_domin_parti)
+      integer list_domin_F(0:Np,0:max_domin_parti)
 
       integer Msize
       integer i,j
@@ -564,7 +565,7 @@
 
       do i = 1, Msize
 
-      	 temppart =  lista_zdom_F(0:Np, i)
+      	 temppart =  list_domin_F(0:Np, i)
 	 sphere = 1d0
 
 	 do j = 0, Np
@@ -579,7 +580,6 @@
 
       write(*,*) 'Max and min in b_i: ', maxval(real(b_i)), minval(real(b_i))
       write(*,*)
-!      read (*,*)
 
       return
       end Subroutine
@@ -592,7 +592,7 @@
       use parameters
       implicit none
 
-      double precision b_i(0:ile_part)
+      double precision b_i(0:max_domin_parti)
       integer Msize
       double precision  suma
 
@@ -603,8 +603,8 @@
       do i = 1, Msize
 	suma = suma + b_i(i)*b_i(i)
       enddo
-      
-      write(*,*) 'SUMA: ', suma
+
+      write(*,*) 'SUM: ', suma
       suma = sqrt(suma)
 
       do i = 1, Msize
@@ -617,72 +617,75 @@
 !============================================ END Normalization
 !============================================ Ordering
 
-      Subroutine  order (ordering, b_i, lista_zdom_F, Msize)
+      Subroutine  order (ordering, b_i, list_domin_F, Msize)
 
       use parameters
       use formats
       implicit none
 
-      integer ordering(0:ile_part)
-      double precision b_i(0:ile_part)
-      integer lista_zdom_F(0:Np,0:ile_part)
+      integer ordering(0:max_domin_parti)
+      double precision b_i(0:max_domin_parti)
+      integer list_domin_F(0:Np,0:max_domin_parti)
       integer Msize
       integer temppart (0:Np)
 
-      integer i,j, suma,max,pozycja
+      integer i,j, suma,max,position
+      double precision alpha
+
+      common /alp/ alpha
       
-      ordering(0:ile_part) = 0
-      
-      
+      ordering(0:max_domin_parti) = 0
+
+
 
       suma = 0
       max = 0
-      pozycja = 0
+      position = 0
 
       do i = 1, Msize
-      
-      	 temppart =  lista_zdom_F(0:Np, i)
+
+      	 temppart =  list_domin_F(0:Np, i)
          suma =0
-         
+
          do j = 0, Np
             suma = suma + 2**(Np-j) * abs( temppart(j)-1 )
          enddo
-         
+
          ordering (i) = suma
       enddo
 
-      write(1,*) '***Fermionic Jack polynomial***'
+      write(1,*) '***Fermionic Jack polynomial (sphere)***'
             write(1,*) ' '
       write(1,*) 'Partition:'
-      write(1,party) lista_zdom_F(0:Np,1)
+      write(1,party) list_domin_F(0:Np,1)
       write(1,*) ' '
       write(1,*) 'Jack parameter (alpha):'
       write(1,*) alpha
       write(1,*)
-      write(1,*) 'Size of Hilbert subspace (Slater det.):', Msize
+      write(1,*) 'Dim. of the Hilbert subspace (Slater det.):', Msize
       write(1,*)
       write(1,*) 'Coefficients of Jack fermionic polynomial (partition, coeff):'
       write(1,*)
-      
+
       do j = 1,Msize
          max = 0
          do i = 1,Msize
-      
+
             if (max < ordering(i) ) then
                max = ordering(i)
-               pozycja = i
+               position = i
             endif
-         
-         enddo
-      
-         ordering(pozycja) = -1
-      
-         write(1,party, advance="no" )  lista_zdom_F(0:Np, pozycja)
-         write(1,*) b_i(pozycja)
 
-      
+         enddo
+
+         ordering(position) = -1
+
+         write(1,party, advance="no" )  list_domin_F(0:Np, position)
+         write(1,*) b_i(position)
+
+
       enddo
-      
+
 
 
       return
@@ -699,7 +702,7 @@
 !============================================================================== Program JACK ON SPHERE
 
 
-      Program JackSphere	
+      Program JackSphere
       use parameters
       use funkcje
       use formats
@@ -707,86 +710,63 @@
 
       integer lambda(0:Np)
       integer mu (0:Np)
-      
+
       integer Msize
-      
-      integer lista_zdom_B(0:Np,0:ile_part)
-      integer lista_zdom_F(0:Np,0:ile_part)
-      double precision c_i(0:ile_part) ! coefficients of Jack (plane)
+
+      integer list_domin_B(0:Np,0:max_domin_parti)
+      integer list_domin_F(0:Np,0:max_domin_parti)
+      double precision c_i(0:max_domin_parti) ! coefficients of Jack (plane)
       double precision MH(0:Np)
-      double precision b_i(0:ile_part) ! coefficients of Jack (sphere)
-      
-      integer ordering(0:ile_part)
+      double precision b_i(0:max_domin_parti) ! coefficients of Jack (sphere)
+      integer i ,io
+      integer ordering(0:max_domin_parti)
+      double precision alpha
+
+      common /alp/ alpha
 
 
 
- 
 
 
-      integer i
-      
+
 
       open(1,file='FJ.out',status='unknown')
+      open(2,file='alpha.in',status='unknown')
+      open(3,file='lambda.in',status='unknown')
 
-
-      
       lambda(0:Np) =0
       mu(0:Np) =0
-      
-
-      c_i(0:ile_part) = 0.0
-      b_i(0:ile_part) = 0.0     
-      MH(0:Np)  = 0.0 
- 
-!==================================      
 
 
+      c_i(0:max_domin_parti) = 0.0
+      b_i(0:max_domin_parti) = 0.0
+      MH(0:Np)  = 0.0
+
+!==================================
+
+      read(2,*) alpha
 
 
+      do i=1,Np
+         READ(3, *, iostat=io) lambda(0:i)
+         if(io==0) exit
+      enddo
 
 
-       
-      lambda(0)=1
-      lambda(1)=0
-      lambda(2)=1
-      lambda(3)=0
-      lambda(4)=1
-!      lambda(5)=0
-!      lambda(6)=1
-!      lambda(8)=1
-!      lambda(10)=1
-!      lambda(12)=1
-!      lambda(14)=1
-!      lambda(16)=1
-!      lambda(18)=1
-!      lambda(20)=1
-!      lambda(18)=0
-!      lambda(21)=0     
-
-      mu(0)=1
-      mu(1)=0
-      mu(2)=0
-      mu(3)=0
-      mu(4)=0
-!      mu(5)=0
-!      mu(6)=1
-!      mu(9)=0
-
-      lista_zdom_B(0:Np,0:ile_part) = 0
-      lista_zdom_F(0:Np,0:ile_part) = 0
-      call list_zdom_B(lista_zdom_B, lambda)
-      Msize = lista_zdom_B(0,0)
-      write(*,*) Msize
-      call list_zdom_F(lista_zdom_B, lista_zdom_F, Msize )
-!      write(*, party2) lista_zdom_B
+      list_domin_B(0:Np,0:max_domin_parti) = 0
+      list_domin_F(0:Np,0:max_domin_parti) = 0
+      call list_zdom_B(list_domin_B, lambda)
+      Msize = list_domin_B(0,0)
+      call list_zdom_F(list_domin_B, list_domin_F, Msize)
+!      write(*, party2) list_domin_B
 !      write(*,*) '****************'
-!      write(*, party2) lista_zdom_F
-      call wsp(Msize, lista_zdom_F, c_i)
-      call MH_S (MH, ile_orb)
-      call wsp_S (MH, c_i, b_i, lista_zdom_F,Msize )
+!      write(*, party2) list_domin_F
+      call wsp(Msize, list_domin_F, c_i)
+      call MH_S (MH, nb_orbit)
+      call coeff_Sp (MH, c_i, b_i, list_domin_F,Msize)
       call nor (b_i, Msize)
-      write (*,wspp) c_i
-      call order (ordering, b_i, lista_zdom_F, Msize)
+      !write (*,wspp) c_i
+      call order (ordering, b_i, list_domin_F, Msize)
       !read(*,*)
 
 
