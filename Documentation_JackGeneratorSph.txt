@@ -1,1 +1,17 @@
 Program JackGeneratorSph
+
+Brief documentation:
+
+1) Parameters in module 'parameters' 
+2) Jack parameters and input files
+3) Output file 
+4) Errors
+5) Important Jack functions - parameters
+
+             integer, parameter:: Np = 14   ! length of a partition
+             integer, parameter:: max_domin_parti=72000 ! number of dominated partitions
+             integer, parameter:: nb_particles = 4! how many particles (variables)
+             integer, parameter:: nb_orbit =14 ! how many orbitals on the sphere ! = Np?
+             
+             
+             
