@@ -2,16 +2,27 @@ Program JackGeneratorSph
 
 Brief documentation:
 
-1) Parameters in module 'parameters' 
-2) Jack parameters and input files
-3) Output file 
-4) Errors
-5) Important Jack functions - parameters
+Program JackGenerator calculates coeffiecients of fermionic Jack polynomials in Slater determinant basis. It can be used for numerical study of Jack states in FQHE. This version returns coeffiecients of Jack on the shpere (automatic inverse stereographic projection).  JackGenerator is written in Fortran 95. This brief documentation contains the following subsections
 
-             integer, parameter:: Np = 14   ! length of a partition
-             integer, parameter:: max_domin_parti=72000 ! number of dominated partitions
-             integer, parameter:: nb_particles = 4! how many particles (variables)
-             integer, parameter:: nb_orbit =14 ! how many orbitals on the sphere ! = Np?
-             
+1. Parameters in module 'parameters' 
+2. Jack parameters and input files
+3. Output file 
+4. Errors
+5. Important Jack functions - parameters
+6. Examples
+7. Note
+
+========================================================================================
+1. Parameters in module 'parameters' 
+
+'Np' is a length of a partition of Jack polynomial (also number of orbitals on the sphere)
+'max_domin_parti' is the max size of list of partitions used for Jack gneration. Must be larger than number of partitions dominated by the Jack partition. Upper estimate is the value of restricted partition number p_{nb_particles}(nb_orbit) 
+'nb_particles' = number of particles (variables)
+'nb_orbit' = number of orbitals on the sphere 
+
+========================================================================================
+2. Jack parameters and input files
+
+
              
              
