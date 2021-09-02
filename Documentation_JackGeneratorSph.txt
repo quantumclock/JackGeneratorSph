@@ -66,7 +66,7 @@ Module parameters
 
 
 ========================================================================================
-3. Output files
+4. Output files
 
 Output of the program is in the file 'FJ.out'. For example three particle Fermionic Jack on the sphere has the following coeffiecients 
 
@@ -93,3 +93,17 @@ Output of the program is in the file 'FJ.out'. For example three particle Fermio
 ************************************************
 
 The coeffiecients are listed after the phrase ' Coefficients of Jack fermionic polynomial (partition, coeff):' in two columns - labeling partition and vale of the coeffiecient respectivelly. 
+
+
+
+
+========================================================================================
+5. Errors
+
+Most typical errors are: (1) 'max_domin_parti' to small; (2) Jack has a pole. 
+
+The error (1) is written on the console with a text 'max_domin_parti'. To solve it increase  'max_domin_parti' to the proper size of the vector.
+The error (2) It is announced with a text in a console: 'Eigenvalues equal: Jack has a pole'. This error is an effect of wrong parameter 'alpha'.  Jack with such parameter can not be generated because it is not well defined. 
+
+========================================================================================
+6. Important Jack functions - parameters
