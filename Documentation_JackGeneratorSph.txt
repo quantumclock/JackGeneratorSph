@@ -16,10 +16,10 @@ Program JackGenerator calculates coeffiecients of fermionic Jack polynomials in 
 ========================================================================================
 1. Parameters in module 'parameters' 
 
-'Np' is a length of a partition of Jack polynomial (also number of orbitals on the sphere)
+'Np' is a length of a partition of Jack polynomial decreased by 1 (also number of orbitals on the sphere)
 'max_domin_parti' is the max size of list of partitions used for Jack gneration. Must be larger than number of partitions dominated by the Jack partition. Upper estimate is the value of restricted partition number p_{nb_particles}(nb_orbit) 
 'nb_particles' = number of particles (variables)
-'nb_orbit' = number of orbitals on the sphere 
+'nb_orbit' = number of orbitals on the sphere (counting from zero)
 
 ========================================================================================
 2. Jack parameters
@@ -39,5 +39,29 @@ For α = 1, the fermionic Jack polynomials are reduced to the Slater determinant
 
 ========================================================================================
 3. Input files
-             
+
+Jack generator takes two inputs.
+Parameter alpha is read from file 'alpha.in'. This file must contain a single real number. For exaple: -2.0 (parameter for Laughlin state 1/3).  
+Partition is read from file 'lambda.in'. This file nust contain a sequence of 'nb_orbit -nb_particles' (see: 1. Parameters in module 'parameters') numbers which correspond to the bosonic part of the fermionic partition of a ferminic Jack i.e.,  For a ferminoc Jack polynomial S^{\alpha}_ν and  ν = λ + δ a file 'lambda.in' must contain λ. For example If you want to calculate Fermionic Laughlin state 1/3 labeled by a root partition [1 0 0 1 0 0 1 ... 0 0 1], file 'lambda.in' must contain partition [1 0 1 0 1 ... 0 1] (note that the weight of a partition λ is smaller than ν). Since λ is smaller than ν you have to padd the rest of partitions with zero.
+
+Example (Fermionic Jack 1/3 for 4 particles):
+
+'alpha.in'
+************************************************
+-2.0
+************************************************
+
+Module parameters
+************************************************
+             integer, parameter:: Np = 6   
+             integer, parameter:: nb_particles = 3
+             integer, parameter:: nb_orbit =6 
+************************************************
+
+
+'lambda.in'
+************************************************
+1 0 1 0 1 0 0 
+************************************************
+
              
