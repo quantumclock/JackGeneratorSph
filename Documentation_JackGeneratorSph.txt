@@ -162,3 +162,7 @@ Module parameters:
              
 'lambda.in': 2 0 2 0 0 0 
 
+========================================================================================
+8. Note
+
+Program JackGenerator can also provide Jack fermionic polynomials on the plane. To do so one needs to remove part responsible for stereographic projection - function ' coeff_Sp '  or simply print out coefiecients fron the table c_i (rather than b_i). 
