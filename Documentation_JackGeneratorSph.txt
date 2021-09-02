@@ -64,4 +64,32 @@ Module parameters
 1 0 1 0 1 0 0 
 ************************************************
 
-             
+
+========================================================================================
+3. Output files
+
+Output of the program is in the file 'FJ.out'. For example three particle Fermionic Jack on the sphere has the following coeffiecients 
+
+'FJ.out'
+************************************************
+ ***Fermionic Jack polynomial (sphere)***
+  
+ Partition:
+1001001
+  
+ Jack parameter (alpha):
+  -2.0000000000000000     
+
+ Dim. of the Hilbert subspace (Slater det.):           5
+
+ Coefficients of Jack fermionic polynomial (partition, coeff):
+
+0011100 -0.37796447300922731     
+0101010  0.37796447300922720     
+0110001 -0.53452248382484879     
+1000110 -0.53452248382484879     
+1001001  0.37796447300922720     
+
+************************************************
+
+The coeffiecients are listed after the phrase ' Coefficients of Jack fermionic polynomial (partition, coeff):' in two columns - labeling partition and vale of the coeffiecient respectivelly. 
