@@ -1,10 +1,10 @@
 !==============================================================================
 	  module parameters
              implicit none
-             integer, parameter:: Np = 14   ! length of a partition
-             integer, parameter:: max_domin_parti=72000 ! number of dominated partitions
-             integer, parameter:: nb_particles = 4! how many particles (variables)
-             integer, parameter:: nb_orbit =14 ! how many orbitals on the sphere ! = Np?
+             integer, parameter:: Np = 6   ! length of a partition
+             integer, parameter:: max_domin_parti=20000 ! number of dominated partitions
+             integer, parameter:: nb_particles = 3! how many particles (variables)
+             integer, parameter:: nb_orbit =6 ! how many orbitals on the sphere ! = Np?
       end module parameters
 !=========================
       module formats
