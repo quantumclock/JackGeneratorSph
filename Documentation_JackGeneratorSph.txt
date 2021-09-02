@@ -5,12 +5,13 @@ Brief documentation:
 Program JackGenerator calculates coeffiecients of fermionic Jack polynomials in Slater determinant basis. It can be used for numerical study of Jack states in FQHE. This version returns coeffiecients of Jack on the shpere (automatic inverse stereographic projection).  JackGenerator is written in Fortran 95. This brief documentation contains the following subsections
 
 1. Parameters in module 'parameters' 
-2. Jack parameters and input files
-3. Output file 
-4. Errors
-5. Important Jack functions - parameters
-6. Examples
-7. Note
+2. Jack parameters 
+3. Input files
+4. Output file 
+5. Errors
+6. Important Jack functions - parameters
+7. Examples
+8. Note
 
 ========================================================================================
 1. Parameters in module 'parameters' 
@@ -21,8 +22,22 @@ Program JackGenerator calculates coeffiecients of fermionic Jack polynomials in 
 'nb_orbit' = number of orbitals on the sphere 
 
 ========================================================================================
-2. Jack parameters and input files
+2. Jack parameters
+
+Jack polynomials (and fermionic Jack polynomials) are labeled by two parameters: (a) real number alpha; (b) partition. 
+In symmetric polynomials theory real number alpha is typically positive (due to the scalar product < , >_{\alpha} being well defined).  In FQHE more interesting are negative alpha as they label some of the FQHE trial wavefunctions. For any partition Jack polynomial is well defined for almost all values of alpha i.e., for a finite numebr of negative alpha the correcsponding Jack Polynomial might be not well defines (correspondning values of alpha are called poles of the Jack polynomial). Fermionic Jack polynomials inherite the same properties.
+A partition λ is a sequence λ = (λ1, λ2, .., λj, ...), of the non-negative integers in the non-increasing order i.e., λ1 ≥ λ2 ≥ ... ≥ λj ≥ .... A sum of all λi is called weight of a partition and the number of elements λi is the lenght of partition. In FQHE length typically corresponds to the number of particles in the system, and weight corresponds to the maximal alowable angular momentum. The symbol m(λ, i) is the number of parts of λ equal to i. A partition can be represented in the occupancy representation, which emphasizes the number of occurrences of each integer in the partition λ, then  λ = [m(λ, 0) m(λ, 1) m(λ, 2) ...]. In Jack generator we use occupancy representation as input partition. 
+Interesting FQHE Jack polynomials are labeled by partitions like [1 0 1 0 1 0 1 ... 0 1 0 1] (bosonic Laughlin 1/2). Fermionic Jack polynomials are labeled by partitions with no repeating parts (fermionic partitions). Any fermionic partition µ can be written as a sum of some bosonic partition λ and δ (δ =[1 1 1 1 1 1 ...]). For example partition of a ferminic Laughlin state 1/3 is [1 0 0 1 0 0 1 ... 0 0 1] is a sum of bosonic partition of Laughlin state 1/2 [1 0 1 0 ... 0 1]  and δ:
+[1 0 0 1 0 0 1 ... 0 0 1] =  [1 0 1 0 1 ... 0 1] + [1 1 1 1 1 1 ... 1].
+
+The fermionic Jack polynomial S^{\alpha}_ν is defined as a product of the symmetric Jack polynomial and the Vandermonde determinant D (Jastrow factor). For a partition ν such that ν = λ + δ, 
+S^{\alpha}_ν = J^{\alpha}_λ D.
+
+For α = 1, the fermionic Jack polynomials are reduced to the Slater determinants. The fermionic Jack polynomials are well-defined on the same domain as the Jack polynomials i.e., they have common poles.
 
 
+
+========================================================================================
+3. Input files
              
              
