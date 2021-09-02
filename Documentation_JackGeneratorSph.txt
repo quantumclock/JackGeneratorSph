@@ -2,7 +2,7 @@ Program JackGeneratorSph
 
 Brief documentation:
 
-Program JackGenerator calculates coeffiecients of fermionic Jack polynomials in Slater determinant basis. It can be used for numerical study of Jack states in FQHE. This version returns coeffiecients of Jack on the shpere (automatic inverse stereographic projection).  JackGenerator is written in Fortran 95. This brief documentation contains the following subsections
+Program JackGenerator calculates coefficients of fermionic Jack polynomials in Slater determinant basis. It can be used for the numerical study of Jack states in FQHE. This version returns coefficients of Jack on the sphere (automatic inverse stereographic projection).  JackGenerator is written in Fortran 95. This brief documentation contains the following subsections
 
 1. Parameters in module 'parameters' 
 2. Jack parameters 
@@ -16,153 +16,66 @@ Program JackGenerator calculates coeffiecients of fermionic Jack polynomials in 
 ========================================================================================
 1. Parameters in module 'parameters' 
 
-'Np' is a length of a partition of Jack polynomial decreased by 1 (also number of orbitals on the sphere)
-'max_domin_parti' is the max size of list of partitions used for Jack gneration. Must be larger than number of partitions dominated by the Jack partition. Upper estimate is the value of restricted partition number p_{nb_particles}(nb_orbit) 
-'nb_particles' = number of particles (variables)
-'nb_orbit' = number of orbitals on the sphere (counting from zero)
+'Np' is a length of a partition of Jack polynomial decreased by 1 (also number of orbitals on the sphere)'max_domin_parti' is the max size of list of partitions used for Jack gneration. Must be larger than number of partitions dominated by the Jack partition. Upper estimate is the value of restricted partition number p_{nb_particles}(nb_orbit) 'nb_particles' = number of particles (variables)'nb_orbit' = number of orbitals on the sphere (counting from zero)
 
 ========================================================================================
 2. Jack parameters
 
-Jack polynomials (and fermionic Jack polynomials) are labeled by two parameters: (a) real number alpha; (b) partition. 
-In symmetric polynomials theory real number alpha is typically positive (due to the scalar product < , >_{\alpha} being well defined).  In FQHE more interesting are negative alpha as they label some of the FQHE trial wavefunctions. For any partition Jack polynomial is well defined for almost all values of alpha i.e., for a finite numebr of negative alpha the correcsponding Jack Polynomial might be not well defines (correspondning values of alpha are called poles of the Jack polynomial). Fermionic Jack polynomials inherite the same properties.
-A partition λ is a sequence λ = (λ1, λ2, .., λj, ...), of the non-negative integers in the non-increasing order i.e., λ1 ≥ λ2 ≥ ... ≥ λj ≥ .... A sum of all λi is called weight of a partition and the number of elements λi is the lenght of partition. In FQHE length typically corresponds to the number of particles in the system, and weight corresponds to the maximal alowable angular momentum. The symbol m(λ, i) is the number of parts of λ equal to i. A partition can be represented in the occupancy representation, which emphasizes the number of occurrences of each integer in the partition λ, then  λ = [m(λ, 0) m(λ, 1) m(λ, 2) ...]. In Jack generator we use occupancy representation as input partition. 
-Interesting FQHE Jack polynomials are labeled by partitions like [1 0 1 0 1 0 1 ... 0 1 0 1] (bosonic Laughlin 1/2). Fermionic Jack polynomials are labeled by partitions with no repeating parts (fermionic partitions). Any fermionic partition µ can be written as a sum of some bosonic partition λ and δ (δ =[1 1 1 1 1 1 ...]). For example partition of a ferminic Laughlin state 1/3 is [1 0 0 1 0 0 1 ... 0 0 1] is a sum of bosonic partition of Laughlin state 1/2 [1 0 1 0 ... 0 1]  and δ:
-[1 0 0 1 0 0 1 ... 0 0 1] =  [1 0 1 0 1 ... 0 1] + [1 1 1 1 1 1 ... 1].
-
-The fermionic Jack polynomial S^{\alpha}_ν is defined as a product of the symmetric Jack polynomial and the Vandermonde determinant D (Jastrow factor). For a partition ν such that ν = λ + δ, 
-S^{\alpha}_ν = J^{\alpha}_λ D.
-
+Jack polynomials (and fermionic Jack polynomials) are labeled by two parameters: (a) real number alpha; (b) partition. In symmetric polynomials theory real number alpha is typically positive (due to the scalar product < , >_{\alpha} being well defined).  In FQHE more interesting is negative alpha as they label some of the FQHE trial wavefunctions. For any partition, Jack polynomial is well defined for almost all values of alpha i.e., for a finite number of negative alpha, the corresponding Jack Polynomial might be not well defined (corresponding values of alpha are called poles of the Jack polynomial). Fermionic Jack polynomials inherit the same properties. A partition λ is a sequence λ = (λ1, λ2, .., λj, ...), of the non-negative integers in the non-increasing order i.e., λ1 ≥ λ2 ≥ ... ≥ λj ≥ .... A sum of all λi is called the weight of a partition and the number of elements λi is the length of the partition. In FQHE length typically corresponds to the number of particles in the system, and weight corresponds to the maximal allowable angular momentum. The symbol m(λ, i) is the number of parts of λ equal to i. A partition can be represented in the occupancy representation, which emphasizes the number of occurrences of each integer in the partition λ, then λ = [m(λ, 0) m(λ, 1) m(λ, 2) ...]. In the Jack generator, we use occupancy representation as input partition. Interesting FQHE Jack polynomials are labeled by partitions like [1 0 1 0 1 0 1 ... 0 1 0 1] (bosonic Laughlin 1/2). Fermionic Jack polynomials are labeled by partitions with no repeating parts (fermionic partitions). Any fermionic partition µ can be written as a sum of some bosonic partition λ and δ (δ =[1 1 1 1 1 1 ...]). For example partition of a fermionic Laughlin state 1/3 is [1 0 0 1 0 0 1 ... 0 0 1] is a sum of bosonic partition of Laughlin state 1/2 [1 0 1 0 ... 0 1]  and δ:[1 0 0 1 0 0 1 ... 0 0 1] =  [1 0 1 0 1 ... 0 1] + [1 1 1 1 1 1 ... 1].
+The fermionic Jack polynomial S^{\alpha}_ν is defined as a product of the symmetric Jack polynomial and the Vandermonde determinant D (Jastrow factor). For a partition ν such that ν = λ + δ, S^{\alpha}_ν = J^{\alpha}_λ D.
 For α = 1, the fermionic Jack polynomials are reduced to the Slater determinants. The fermionic Jack polynomials are well-defined on the same domain as the Jack polynomials i.e., they have common poles.
-
 
 
 ========================================================================================
 3. Input files
 
-Jack generator takes two inputs.
-Parameter alpha is read from file 'alpha.in'. This file must contain a single real number. For exaple: -2.0 (parameter for Laughlin state 1/3).  
-Partition is read from file 'lambda.in'. This file nust contain a sequence of 'nb_orbit -nb_particles' (see: 1. Parameters in module 'parameters') numbers which correspond to the bosonic part of the fermionic partition of a ferminic Jack i.e.,  For a ferminoc Jack polynomial S^{\alpha}_ν and  ν = λ + δ a file 'lambda.in' must contain λ. For example If you want to calculate Fermionic Laughlin state 1/3 labeled by a root partition [1 0 0 1 0 0 1 ... 0 0 1], file 'lambda.in' must contain partition [1 0 1 0 1 ... 0 1] (note that the weight of a partition λ is smaller than ν). Since λ is smaller than ν you have to padd the rest of partitions with zero.
-
+Jack generator takes two inputs. Parameter alpha is read from file 'alpha.in'. This file must contain a single real number. For example: -2.0 (parameter for Laughlin state 1/3).  Partition is read from file 'lambda.in'. This file must contain a sequence of 'nb_orbit -nb_particles' (see: 1. Parameters in module 'parameters') numbers which correspond to the bosonic part of the fermionic partition of a fermionic Jack i.e.,  For a fermionic Jack polynomial S^{\alpha}_ν and ν = λ + δ a file 'lambda.in' must contain λ. For example If you want to calculate Fermionic Laughlin state 1/3 labeled by a root partition [1 0 0 1 0 0 1 ... 0 0 1], file 'lambda.in' must contain partition [1 0 1 0 1 ... 0 1] (note that the weight of a partition λ is smaller than ν). Since λ is smaller than ν you have to fill the rest of the partitions with zeros.
 Example (Fermionic Jack 1/3 for 4 particles):
+'alpha.in'************************************************-2.0************************************************
+Module parameters************************************************             integer, parameter:: Np = 6                integer, parameter:: nb_particles = 3             integer, parameter:: nb_orbit =6 ************************************************
 
-'alpha.in'
-************************************************
--2.0
-************************************************
+'lambda.in'************************************************1 0 1 0 1 0 0 ************************************************
 
-Module parameters
-************************************************
-             integer, parameter:: Np = 6   
-             integer, parameter:: nb_particles = 3
-             integer, parameter:: nb_orbit =6 
-************************************************
-
-
-'lambda.in'
-************************************************
-1 0 1 0 1 0 0 
-************************************************
-
-
-========================================================================================
-4. Output files
-
+========================================================================================4. Output files
 Output of the program is in the file 'FJ.out'. For example three particle Fermionic Jack on the sphere has the following coeffiecients 
-
-'FJ.out'
-************************************************
- ***Fermionic Jack polynomial (sphere)***
-  
- Partition:
-1001001
-  
- Jack parameter (alpha):
-  -2.0000000000000000     
-
+'FJ.out'************************************************ ***Fermionic Jack polynomial (sphere)***   Partition:1001001   Jack parameter (alpha):  -2.0000000000000000     
  Dim. of the Hilbert subspace (Slater det.):           5
-
  Coefficients of Jack fermionic polynomial (partition, coeff):
-
-0011100 -0.37796447300922731     
-0101010  0.37796447300922720     
-0110001 -0.53452248382484879     
-1000110 -0.53452248382484879     
-1001001  0.37796447300922720     
-
+0011100 -0.37796447300922731     0101010  0.37796447300922720     0110001 -0.53452248382484879     1000110 -0.53452248382484879     1001001  0.37796447300922720     
 ************************************************
-
-The coeffiecients are listed after the phrase ' Coefficients of Jack fermionic polynomial (partition, coeff):' in two columns - labeling partition and vale of the coeffiecient respectivelly. 
-
+The coefficients are listed after the phrase ' Coefficients of Jack fermionic polynomial (partition, coeff):' in two columns - labeling partition and vale of the coefficient respectively. 
 
 
 
 ========================================================================================
 5. Errors
-
-Most typical errors are: (1) 'max_domin_parti' to small; (2) Jack has a pole. 
-
-The error (1) is written on the console with a text 'max_domin_parti'. To solve it increase  'max_domin_parti' to the proper size of the vector.
-The error (2) It is announced with a text in a console: 'Eigenvalues equal: Jack has a pole'. This error is an effect of wrong parameter 'alpha'.  Jack with such parameter can not be generated because it is not well defined. 
+The most typical errors are: (1) 'max_domin_parti' to small; (2) Jack has a pole. 
+The error (1) is written on the console with the text 'max_domin_parti'. To solve it increase  'max_domin_parti' to the proper size of the vector. The error (2) is announced with a text in a console: 'Eigenvalues equal: Jack has a pole'. This error is an effect of the wrong parameter 'alpha'.  Jack with such parameter can not be generated because it is not well defined. 
 
 ========================================================================================
 6. Important Jack functions - parameters
 
 (i) Laughlin 1/r wavefunction (r - odd) is a  Fermionic Jack polynomial indexed by a real parameter alpha = -2/(r-2) and partition [1 0^{r-2} 1 0^{r-2} 1 0^{r-2} 1 ... 0^{r-2} 1 0^{r-2} 1] where '0^{r-2}' is a sequence of (r-2) zeros. 
-
 (ii) Moore-Read 1/2 wavefunction is a  Fermionic Jack polynomial indexed by a real parameter alpha = -3 and partition [1 1 0 0 1 1 0 0 ... 0 0 1 1 0 0 1 1].
-
 (iii) Read-Rezayi k/(k+2) wavefunction is a  Fermionic Jack polynomial indexed by a real parameter alpha = -k and partition [1^{k} 0 0 1^{k} 0 0 1^{k} 0 0  ... 0 0 1^{k}] where '1^{k}' is a sequence of k ones.
-
 (iv) Gaffnian 2/5 wavefunction is a  Fermionic Jack polynomial indexed by a real parameter alpha = -1.5 and partition [1 1 0 0 0 1 1 0 0 0 ... 0 0 0 1 1 0 0 0 1 1].
 
-
 ========================================================================================
-6. Examples
-
+7. Examples
 Note: Partition that is an input of a program is a bosonic partition (not fermionic) i.e., for a fermionic Jack labeled by a partition ν such that ν = λ + δ you need to provide λ.  
-
 (i) Laughlin 1/3 wavefunction  
-
-Input files (three particles): 
-'alpha.in' -2.0
-
-Module parameters: 
-             integer, parameter:: Np = 6   
-             integer, parameter:: nb_particles = 3
-             integer, parameter:: nb_orbit =6 
-             
-'lambda.in': 1 0 1 0 1 0 0 
-
+Input files (three particles): 'alpha.in' -2.0
+Module parameters:              integer, parameter:: Np = 6                integer, parameter:: nb_particles = 3             integer, parameter:: nb_orbit =6              'lambda.in': 1 0 1 0 1 0 0 
 
 
 (ii) Laughlin 1/3 wavefunction  
-
-Input files (four particles): 
-'alpha.in' -2.0
-
-Module parameters: 
-             integer, parameter:: Np = 9   
-             integer, parameter:: nb_particles = 4
-             integer, parameter:: nb_orbit =9 
-             
-'lambda.in': 1 0 1 0 1 0 1 0 0 0 
-
+Input files (four particles): 'alpha.in' -2.0
+Module parameters:              integer, parameter:: Np = 9                integer, parameter:: nb_particles = 4             integer, parameter:: nb_orbit =9              'lambda.in': 1 0 1 0 1 0 1 0 0 0 
  
-
 (iii) Moore-Read 1/2 wavefunction 
-
-Input files (four particles): 
-'alpha.in' -3.0
-
-Module parameters: 
-             integer, parameter:: Np = 5   
-             integer, parameter:: nb_particles = 4
-             integer, parameter:: nb_orbit =5 
-             
-'lambda.in': 2 0 2 0 0 0 
+Input files (four particles): 'alpha.in' -3.0
+Module parameters:              integer, parameter:: Np = 5                integer, parameter:: nb_particles = 4             integer, parameter:: nb_orbit =5              'lambda.in': 2 0 2 0 0 0 
 
 ========================================================================================
 8. Note
-
-Program JackGenerator can also provide Jack fermionic polynomials on the plane. To do so one needs to remove part responsible for stereographic projection - function ' coeff_Sp '  or simply print out coefiecients fron the table c_i (rather than b_i). 
+Program JackGenerator can also provide Jack fermionic polynomials on the plane. To do so one needs to remove part responsible for stereographic projection - function ' coeff_Sp '  or simply print out coefiecients fron the table c_i (rather than b_i).
