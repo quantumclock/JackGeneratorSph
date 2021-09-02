@@ -31,38 +31,84 @@ For α = 1, the fermionic Jack polynomials are reduced to the Slater determinant
 
 Jack generator takes two inputs. Parameter alpha is read from file 'alpha.in'. This file must contain a single real number. For example: -2.0 (parameter for Laughlin state 1/3).  Partition is read from file 'lambda.in'. This file must contain a sequence of 'nb_orbit -nb_particles' (see: 1. Parameters in module 'parameters') numbers which correspond to the bosonic part of the fermionic partition of a fermionic Jack i.e.,  For a fermionic Jack polynomial S^{\alpha}_ν and ν = λ + δ a file 'lambda.in' must contain λ. For example If you want to calculate Fermionic Laughlin state 1/3 labeled by a root partition [1 0 0 1 0 0 1 ... 0 0 1], file 'lambda.in' must contain partition [1 0 1 0 1 ... 0 1] (note that the weight of a partition λ is smaller than ν). Since λ is smaller than ν you have to fill the rest of the partitions with zeros.
 Example (Fermionic Jack 1/3 for 4 particles):
-'alpha.in'************************************************-2.0************************************************
-Module parameters************************************************             integer, parameter:: Np = 6                integer, parameter:: nb_particles = 3             integer, parameter:: nb_orbit =6 ************************************************
 
-'lambda.in'************************************************1 0 1 0 1 0 0 ************************************************
 
-========================================================================================4. Output files
-Output of the program is in the file 'FJ.out'. For example three particle Fermionic Jack on the sphere has the following coeffiecients 
-'FJ.out'************************************************ ***Fermionic Jack polynomial (sphere)***   Partition:1001001   Jack parameter (alpha):  -2.0000000000000000     
- Dim. of the Hilbert subspace (Slater det.):           5
- Coefficients of Jack fermionic polynomial (partition, coeff):
-0011100 -0.37796447300922731     0101010  0.37796447300922720     0110001 -0.53452248382484879     1000110 -0.53452248382484879     1001001  0.37796447300922720     
+'alpha.in'
 ************************************************
+-2.0
+************************************************
+
+
+Module parameters
+************************************************
+integer, parameter:: Np = 6                
+integer, parameter:: nb_particles = 3             
+integer, parameter:: nb_orbit =6 
+************************************************
+
+'lambda.in'
+************************************************
+1 0 1 0 1 0 0 
+************************************************
+
+========================================================================================
+4. Output files
+
+Output of the program is in the file 'FJ.out'. For example three particle Fermionic Jack on the sphere has the following coeffiecients 
+'FJ.out'
+
+************************************************
+
+ ***Fermionic Jack polynomial (sphere)***
+  
+ Partition:
+1001001
+  
+ Jack parameter (alpha):
+  -2.0000000000000000     
+
+ Dim. of the Hilbert subspace (Slater det.):           5
+
+ Coefficients of Jack fermionic polynomial (partition, coeff):
+
+0011100 -0.37796447300922731     
+0101010  0.37796447300922720     
+0110001 -0.53452248382484879     
+1000110 -0.53452248382484879     
+1001001  0.37796447300922720     
+  
+************************************************
+
+
+
 The coefficients are listed after the phrase ' Coefficients of Jack fermionic polynomial (partition, coeff):' in two columns - labeling partition and vale of the coefficient respectively. 
 
 
 
 ========================================================================================
 5. Errors
+
 The most typical errors are: (1) 'max_domin_parti' to small; (2) Jack has a pole. 
-The error (1) is written on the console with the text 'max_domin_parti'. To solve it increase  'max_domin_parti' to the proper size of the vector. The error (2) is announced with a text in a console: 'Eigenvalues equal: Jack has a pole'. This error is an effect of the wrong parameter 'alpha'.  Jack with such parameter can not be generated because it is not well defined. 
+
+The error (1) is announced on the console with the text 'max_domin_parti'. To solve it increase  'max_domin_parti' to the proper size of the vector. 
+
+The error (2) is announced with a text in a console: 'Eigenvalues equal: Jack has a pole'. This error is an effect of the wrong parameter 'alpha'.  Jack with such parameter can not be generated because it is not well defined. 
 
 ========================================================================================
 6. Important Jack functions - parameters
 
 (i) Laughlin 1/r wavefunction (r - odd) is a  Fermionic Jack polynomial indexed by a real parameter alpha = -2/(r-2) and partition [1 0^{r-2} 1 0^{r-2} 1 0^{r-2} 1 ... 0^{r-2} 1 0^{r-2} 1] where '0^{r-2}' is a sequence of (r-2) zeros. 
+
 (ii) Moore-Read 1/2 wavefunction is a  Fermionic Jack polynomial indexed by a real parameter alpha = -3 and partition [1 1 0 0 1 1 0 0 ... 0 0 1 1 0 0 1 1].
+
 (iii) Read-Rezayi k/(k+2) wavefunction is a  Fermionic Jack polynomial indexed by a real parameter alpha = -k and partition [1^{k} 0 0 1^{k} 0 0 1^{k} 0 0  ... 0 0 1^{k}] where '1^{k}' is a sequence of k ones.
+
 (iv) Gaffnian 2/5 wavefunction is a  Fermionic Jack polynomial indexed by a real parameter alpha = -1.5 and partition [1 1 0 0 0 1 1 0 0 0 ... 0 0 0 1 1 0 0 0 1 1].
 
 ========================================================================================
 7. Examples
 Note: Partition that is an input of a program is a bosonic partition (not fermionic) i.e., for a fermionic Jack labeled by a partition ν such that ν = λ + δ you need to provide λ.  
+
 (i) Laughlin 1/3 wavefunction  
 Input files (three particles): 'alpha.in' -2.0
 Module parameters:              integer, parameter:: Np = 6                integer, parameter:: nb_particles = 3             integer, parameter:: nb_orbit =6              'lambda.in': 1 0 1 0 1 0 0 
